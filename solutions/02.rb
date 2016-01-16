@@ -3,10 +3,7 @@ def next_step(snake, direction)
 end
 
 def move(snake, direction)
-	  grown_up_snake = snake.dup
-	  grown_up_snake.delete_at(0)
-	  grown_up_snake.push next_step grown_up_snake, direction
-      grown_up_snake
+	  grow(snake, direction).drop(1)
 end
 
 def all_positions_available(food, snake, dimensions)
