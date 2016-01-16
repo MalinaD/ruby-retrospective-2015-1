@@ -1,5 +1,5 @@
 def convert_to_bgn(price, currency)
-       currencies  = { :usd = 1.7408, :usd = 1.9557, :gbp = 2.6415, :bgn = 1}
+       currencies  = { usd: 1.7408, eur: 1.9557, gbp: 2.6415, bgn: 1}
 	   
 		(price * currencies[currency]).round(2)
 end
