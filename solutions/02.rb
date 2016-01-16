@@ -8,14 +8,18 @@ def all_positions_available(food, snake, dimensions)
   all_positions(dimensions) - food - snake
 end
 
+def next_step(snake, direction)
+     [snake.last.first + direction.first , snake.last.last + direction.last]
+end
+
 def new_food(food, snake, dimensions)
   (all_possitions_available(food, snake, dimensions)).sample
 end
 
 def grow(snake, direction)
-  grown_up_snake = snake.dup
-  head = grown_up_snake.last
-  grown_up_snake.push([head[0] + direction[0], head[1] + direction[1]])
+  grown_up_snake = snake.clone
+  grown_up_snake.push next_step(grown_up_snake, direction)
+  grown_up_snake
 end
 
 def all_positions(dimensions)
