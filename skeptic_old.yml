@@ -6,7 +6,7 @@
   no_trailing_whitespace: true
   check_syntax: true
   no_global_variables: true
-
+  english_words_for_names: 'bgn usd eur gbp leva dollars euro pounds'
   naming_conventions: true
   max_method_arity: 4
   spaces_around_operators: true
@@ -19,7 +19,7 @@
   no_trailing_whitespace: true
   check_syntax: true
   no_global_variables: true
-
+  english_words_for_names: 'xs ys'
   naming_conventions: true
   max_method_arity: 4
   spaces_around_operators: true
@@ -32,7 +32,7 @@
   no_trailing_whitespace: true
   check_syntax: true
   no_global_variables: true
- 
+  english_words_for_names: 'fibonacci'
   naming_conventions: true
   max_method_arity: 4
   spaces_around_operators: true
@@ -45,7 +45,7 @@
   no_trailing_whitespace: true
   check_syntax: true
   no_global_variables: true
-
+  english_words_for_names: 'WarDeck BeloteDeck SyxtySixDeck belote tierce quarte carre'
   naming_conventions: true
   max_method_arity: 4
   spaces_around_operators: true
