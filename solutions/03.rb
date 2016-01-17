@@ -22,7 +22,6 @@ def each
 	current, current_count = 0, 0
 	while current_count < @count
 		numerator, denominator = get_raw current
-		
 		if numerator.gcd(denominator) == 1
 			yield Rational(numerator, denominator)
 			current_count += 1
@@ -115,6 +114,13 @@ def meaningless(n)
 end
 
 def worthless(n)
+	limit = FibonacciSequence.new(n).to_a.fetch(-1, 0)
+	rationals = RationalSequence.new(Float::INFINITY).lazy
+	sum = 0
+	rationals.take_while do |rational|
+		sum += rational
+		sum <= limit
+	end.force
 end
 
 def is_prime?(number)
