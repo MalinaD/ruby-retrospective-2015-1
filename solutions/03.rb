@@ -1,6 +1,3 @@
-#module DrunkenMathematician
-#module_function
-
 class RationalSequence
 include Enumerable
 
@@ -65,23 +62,19 @@ def each
 end
 end
 
+module DrunkenMathematician
+module_function
+
 def aimless(n)
-	array = next_prime(n)
-	new_array = []
-	if n % 2 == 0
-		array.to_a.each do |m|
-			new_array << Rational(m, m + 1)
-			m += 2
-		end
-		print new_array
-	else
-		array.push(1)
-		array.to_a.each do |m|
-			new_array.push(Rational(m, m + 1))
-			m += 2
-		end
-		print new_array
+	sequence = PrimeSequence.new(n)
+	new_sequence = []
+
+	sequence.each_slice(2) do |pair|
+		pair << 1 if pair.length < 2
+		new_sequence << Rational(pair[0], pair[1])
 	end
+
+	new_sequence.reduce(0, :+)
 end
 
-#end
+end
