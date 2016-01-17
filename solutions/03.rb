@@ -1,6 +1,35 @@
 class RationalSequence
 include Enumerable
 
+def initialize(count)
+	@count = count
+end
+
+def get_raw(position)
+	current_position , key = position , 1
+	while current_position >= key
+		current_position -= key
+		key += 1
+	end
+    if key.even?
+    	[key - current_position, current_position + 1]
+    else
+    	[current_position + 1, key - current_position]
+    end
+end
+
+def each
+	current, current_count = 0, 0
+	while current_count < @count
+		numerator, denominator = get_raw current
+		
+		if numerator.gcd(denominator) == 1
+			yield Rational(numerator, denominator)
+			current_count += 1
+		end
+		current += 1
+	end
+end
 end
 
 class PrimeSequence
