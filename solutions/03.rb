@@ -9,6 +9,10 @@ end
 class PrimeSequence
 include Enumerable
 
+def initialize(count)
+	@count = count
+end
+
 def is_prime?(number)
 	if number < 5
 		if number == 2 || number == 3
@@ -24,16 +28,17 @@ def is_prime?(number)
 	true
 end
 
-def next_prime(max)
-	arr = []
-	n = 2
-	(max * 2).times do
-		if is_prime?(n)
-			arr << n
+def each
+	number = 2
+	counter = 0
+
+	while counter < @count
+		if is_prime?(number)
+			yield number
+			counter += 1
 		end
-		n += 1
+		number += 1
 	end
-	print arr
 end
 
 end
