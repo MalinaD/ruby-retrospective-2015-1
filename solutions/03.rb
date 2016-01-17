@@ -106,4 +106,30 @@ def aimless(n)
 	new_sequence.reduce(0, :+)
 end
 
+def meaningless(n)
+	groups = RationalSequence.new(n).partition do |rational|
+		is_prime?(rational.numerator) or is_prime?(rational.denominator)
+	end
+
+	groups[0].reduce(1, :*) / groups[1].reduce(1, :*)
+end
+
+def worthless(n)
+end
+
+def is_prime?(number)
+	if number < 5
+		if number == 2 || number == 3
+			return true
+		else
+			return false
+		end
+	end
+
+	2.upto(Math.sqrt(number).to_i) do |x|
+		return false if number % x == 0
+	end
+	true
+end
+
 end
