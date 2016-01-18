@@ -1,110 +1,108 @@
 class Card
-include Comparable
-  RANKS = %w(2 3 4 5 6 7 8 9 10 Jack Queen King Ace)
-  SUITS = %w(Spade Heart Club Diamond)
-  attr_accessor :rank
-  attr_accessor :suit
+#RANKS = %w(2 3 4 5 6 7 8 9 10 Jack Queen King Ace)
+#SUITS = %w(Spade Heart Club Diamond)
 
-def initialize(id,rank,suit)
-  self.rank = RANKS[id % 13]
-  self.suit = SUITS[id % 4]
-end
+attr_reader :rank, :suit
+attr_accessor :position
 
-def rank
-@rank
-end
-
-def rank=(value)
-  @rank = value
-end
-
-def suit
-@suit
-end
-
-def suit=(value)
-  @suit = value
+def initialize(rank,suit, position = 0)
+  @rank = rank
+  @suit = suit
+  @position = position
 end
  
-def to_s
-@rank + @suit
+def <=>(another_card)        
+  @rank <=> another_card.rank
+  @suit <=> another_card.suit
 end
 
- def <=>(another_card)
-        ##
-        # We are only comparing cards based on their rank, so we can 
-        # just return the result of the same operator on the cards'
-        # rank attribute
-        
-        @rank <=> another_card.rank
-        @suit <=> another_card.suit
-    end
+def ==(other)
+  (self <=> other).zero?
+end
 
+def to_s
+  "#{rank.to_s.capitalize} of #{suit.to_s.capitalize}"
+end
 end
 
 class Deck
-  attr_accessor :cards
+include Enumerable
+#attr_accessor :cards
 
-  def initialize
-    # shuffle array and init each Card
-    self.cards = (0..51).to_a.shuffle.collect { |id| Card.new(id) }
-  end
+def initialize(cards = nil, ranks: nil, hand_type: nil, hand_size: 52)
+  @hand_size = hand_size
+  @hand_type = hand_type
+  ranks ||= [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
+  self.cards = cards || create_new_deck(ranks) 
+  #(0..51).to_a.shuffle.collect { |id| Card.new(id) }
+  update_ranks(ranks)
+end
 
 def size
-self.cards.length
-end
-
-def draw_top_card
-self.cards = (0..51).to_a.shift
-end
-
-def draw_bottom_card
-self.cards = (0..51).to_a.pop
+  @cards.count
 end
 
 def top_card
-self.cards = (0..51).to_a.first
+  @cards.first
 end
 
+def draw_top_card
+  @cards.shift #(0..51).to_a.shift
+end
+
+#def draw_bottom_card
+  #@cards.pop #(0..51).to_a.pop
+#end
+
 def bottom_card
-self.cards = (0..51).to_a.last
+  @cards.last #(0..51).to_a.last
 end
 
 def shuffle
-self.cards = (0..51).to_a.shuffle
+  @cards.shuffle! #(0..51).to_a.shuffle
 end
 
 def sort
-self.cards = (0..51).to_a.sort
+  @cards.sort! #(0..51).to_a.sort
 end
+
+def each
+  @cards.each {|card| yield card }
 
 def to_s
-@cards
+  @cards.each(&:to_s)
 end
 
+private 
+def create_new_deck(ranks)
+    suits = %i(spades hearts diamonds clubs)
+
+    suits.product(ranks.to_a).shuffle.map do |product|
+      suit, rank = product
+
+      Card.new(rank, suit)
+    end
 end
 
-test
-
-d = Deck.new
-d.cards.each do |card|
-  puts "#{card.rank} #{card.suit}"
+  def update_ranks(ranks)
+    @cards.each do |card|
+      card.position = ranks.index(card.rank) + 1
+    end
+  end
 end
 
+#class WarDeck
 
+#def initialize(player_one, player_two)
+#  @player_one = player_one
+#  @player_two = player_two
+#end
 
-class WarDeck
+#def play_game
+ # @deck = Deck.new
 
-def initialize(player_one, player_two)
-@player_one = player_one
-@player_two = player_two
-end
+ # 1.upto(5) do |number|
+ # @player_one.hand << @deck.
+  #end
+#end
 
-def play_game
-@deck = Deck.new
-
-1.upto(5) do |number|
-@player_one.hand << @deck.
-end
-
-end
