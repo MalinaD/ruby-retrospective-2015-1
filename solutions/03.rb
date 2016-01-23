@@ -39,23 +39,14 @@ def initialize(count)
 end
 
 def is_prime?(number)
-	if number < 5
-		if number == 2 || number == 3
-			return true
-		else
-			return false
-		end
-	end
-
-	2.upto(Math.sqrt(number).to_i) do |x|
-		return false if number % x == 0
+	2.upto(Math.sqrt(number).to_i) do |divisor|
+		return false if number % divisor == 0
 	end
 	true
 end
 
 def each
-	number = 2
-	counter = 0
+	number, counter = 2, 0
 
 	while counter < @count
 		if is_prime?(number)
@@ -78,14 +69,11 @@ def initialize(count, first_two_members = {first: 1, second: 1})
 end
 
 def each
-	previous = @first
-	current = @second
-	counter = 0
+	previous, current, counter = @first, @second, 0
 
-	while counter < @count
+	@count.times do
 		yield previous
 		previous, current = current, current + previous
-		counter += 1
 	end
 end
 end
@@ -124,16 +112,8 @@ def worthless(n)
 end
 
 def is_prime?(number)
-	if number < 5
-		if number == 2 || number == 3
-			return true
-		else
-			return false
-		end
-	end
-
-	2.upto(Math.sqrt(number).to_i) do |x|
-		return false if number % x == 0
+	2.upto(Math.sqrt(number).to_i) do |divisor|
+		return false if number % divisor == 0
 	end
 	true
 end
