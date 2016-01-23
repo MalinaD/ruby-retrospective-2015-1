@@ -7,7 +7,8 @@ def move(snake, direction)
 end
 
 def all_positions_available(food, snake, dimensions)
-	all_positions(dimensions) - food - snake
+  taken_fields = food + snake
+  all_positions(dimensions).select {|value| !taken_fields.include?(value)}
 end
 
 def new_food(food, snake, dimensions)
