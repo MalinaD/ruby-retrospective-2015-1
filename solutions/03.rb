@@ -86,7 +86,7 @@ def aimless(count)
 	new_sequence = Array.new
     return 0 if count == 0
 	new_sequence = sequence.each_slice(2).map do |pair|
-		pair.length == 2? Rational(pair[0], pair[1]) : Rational(pair[0])
+		pair.length == 2 ? Rational(pair[0], pair[1]) : Rational(pair[0])
 	end
 
 	new_sequence.reduce(0, :+)
@@ -103,7 +103,7 @@ end
 def worthless(n)
 	limit = FibonacciSequence.new(n).to_a.fetch(-1, 0)
 	limit ||= 0
-	rationals = Array.new 
+	rationals = Array.new
 	sum, count = 0, 1
 	while(sum <= limit)
 	    rationals = RationalSequence.new(count).to_a

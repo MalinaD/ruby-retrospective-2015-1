@@ -1,6 +1,4 @@
 class Card
-#RANKS = %w(2 3 4 5 6 7 8 9 10 Jack Queen King Ace)
-#SUITS = %w(Spade Heart Club Diamond)
 
 attr_reader :rank, :suit
 attr_accessor :position
@@ -17,24 +15,23 @@ def <=>(another_card)
 end
 
 def ==(other)
-  (self <=> other).zero?
+  (self.class <=> other.class).zero?
 end
 
 def to_s
   "#{rank.to_s.capitalize} of #{suit.to_s.capitalize}"
 end
+
 end
 
 class Deck
 include Enumerable
-#attr_accessor :cards
 
 def initialize(cards = nil, ranks: nil, hand_type: nil, hand_size: 52)
   @hand_size = hand_size
   @hand_type = hand_type
   ranks ||= [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
-  self.cards = cards || create_new_deck(ranks) 
-  #(0..51).to_a.shuffle.collect { |id| Card.new(id) }
+  @cards = cards || create_new_deck(ranks) 
   update_ranks(ranks)
 end
 
@@ -47,33 +44,36 @@ def top_card
 end
 
 def draw_top_card
-  @cards.shift #(0..51).to_a.shift
+  @cards.shift 
 end
 
-#def draw_bottom_card
-  #@cards.pop #(0..51).to_a.pop
-#end
+def draw_bottom_card
+  @cards.pop 
+end
 
 def bottom_card
-  @cards.last #(0..51).to_a.last
+  @cards.last 
 end
 
 def shuffle
-  @cards.shuffle! #(0..51).to_a.shuffle
+  @cards.shuffle!
 end
 
 def sort
-  @cards.sort! #(0..51).to_a.sort
+  @cards.sort!
 end
 
 def each
+  return @cards.each unless block_given?
   @cards.each {|card| yield card }
+end
 
 def to_s
   @cards.each(&:to_s)
 end
 
 private 
+
 def create_new_deck(ranks)
     suits = %i(spades hearts diamonds clubs)
 
@@ -84,25 +84,44 @@ def create_new_deck(ranks)
     end
 end
 
-  def update_ranks(ranks)
-    @cards.each do |card|
-      card.position = ranks.index(card.rank) + 1
-    end
+def update_ranks(ranks)
+  @cards.each do |card|
+    card.position = ranks.index(card.rank) + 1
   end
 end
 
-#class WarDeck
+end
 
-#def initialize(player_one, player_two)
-#  @player_one = player_one
-#  @player_two = player_two
-#end
+class Hand < Deck
 
-#def play_game
- # @deck = Deck.new
+  def initialize(deck, size)
+    super deck.to_a.slice!(0, size)
+    @deck = deck
+    (0..size).each { deck.draw_top_card }
+    self.sort
+  end
 
- # 1.upto(5) do |number|
- # @player_one.hand << @deck.
-  #end
-#end
+  def ranks
+    @deck.ranks
+  end
+
+end
+
+class WarDeck < Deck
+
+def deal
+  Hand.new(self, 26)
+end
+
+class Hand < Deck::Hand
+  def play_card
+    draw_top_card
+  end
+
+  def allow_face_up?
+    size <= 3
+  end
+end
+
+end
 
