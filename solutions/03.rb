@@ -102,12 +102,16 @@ end
 
 def worthless(n)
 	limit = FibonacciSequence.new(n).to_a.fetch(-1, 0)
-	rationals = RationalSequence.new(Float::INFINITY).lazy
-	sum = 0
-	rationals.take_while do |rational|
-		sum += rational
-		sum <= limit
-	end.force
+	limit ||= 0
+	rationals = Array.new 
+	sum, count = 0, 1
+	while(sum <= limit)
+	    rationals = RationalSequence.new(count).to_a
+		sum = rationals.inject(:+)
+		count += 1
+	end
+	rationals.pop
+	rationals
 end
 
 def is_prime?(number)
