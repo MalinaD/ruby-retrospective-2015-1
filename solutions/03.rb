@@ -81,20 +81,19 @@ end
 module DrunkenMathematician
 module_function
 
-def aimless(n)
-	sequence = PrimeSequence.new(n)
-	new_sequence = []
-
-	sequence.each_slice(2) do |pair|
-		pair << 1 if pair.length < 2
-		new_sequence << Rational(pair[0], pair[1])
+def aimless(count)
+	sequence = PrimeSequence.new(count)
+	new_sequence = Array.new
+    return 0 if count == 0
+	new_sequence = sequence.each_slice(2).map do |pair|
+		pair.length == 2? Rational(pair[0], pair[1]) : Rational(pair[0])
 	end
 
 	new_sequence.reduce(0, :+)
 end
 
-def meaningless(n)
-	groups = RationalSequence.new(n).partition do |rational|
+def meaningless(count)
+	groups = RationalSequence.new(count).partition do |rational|
 		is_prime?(rational.numerator) or is_prime?(rational.denominator)
 	end
 
