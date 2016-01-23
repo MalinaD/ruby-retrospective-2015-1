@@ -125,3 +125,31 @@ end
 
 end
 
+class SixtySixDeck < Deck
+  def ranks
+    [9, :jack, :queen, :king, 10, :ace]
+  end
+
+  def deal
+    Hand.new(self, 6)
+  end
+
+  class Hand < Deck::Hand
+    def king_and_queen
+      sort
+      @cards.each_cons(2).find_all do |pair|
+        pair.first.suit == pair.last.suit &&
+          pair.first.rank == :king && pair.last.rank == :queen
+      end
+    end
+
+    def twenty?(trump_suit)
+      king_and_queen.any?{ |pair| !pair.nil? && pair.first.suit != trump_suit }
+    end
+
+    def forty?(trump_suit)
+      king_and_queen.any?{ |pair| !pair.nil? && pair.first.suit == trump_suit }
+    end
+  end #SixtySixDeck::Hand
+end
+
