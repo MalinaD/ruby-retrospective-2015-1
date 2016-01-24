@@ -180,18 +180,17 @@ class BeloteHand < Hand
   end
 
   private
+
   def cards_in_a_row?(amount)
-    power = BeloteDeck::RANKS
-    grouped = @deck.sort!{|a, b| power[a.rank] <=> power[b.rank]}.group_by {|card| card.suit}.values
+    grouped = @deck.sort!{|a, b| BeloteDeck::RANKS[a.rank] <=>
+      BeloteDeck::RANKS[b.rank]}.group_by {|card| card.suit}.values
     grouped.any? do |suited|
       next if suited.size < amount
       suited.each_cons(amount).any? do |con|
-        are_following_numbers?(con)
-      end
-    end
+        are_following?(con) end  end
   end
 
-  def are_following_numbers?(numbers)
+  def are_following?(numbers)
     numbers.each_cons(2).all? do |a, b|
       BeloteDeck::RANKS[b.rank] - BeloteDeck::RANKS[a.rank] == 1
     end
