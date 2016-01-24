@@ -108,13 +108,7 @@ attr_reader :cards
 
 end
 
-class WarDeck < Deck
-
-def deal
-  Hand.new(self, 26)
-end
-
-class Hand < Deck::Hand
+class WarHand < Hand
   def play_card
     @deck.draw_top_card
   end
@@ -124,6 +118,22 @@ class Hand < Deck::Hand
   end
 end
 
+
+class WarDeck < Deck
+  HAND_SIZE = 26
+  TOTAL_CARDS = 52
+
+  def hand_size()
+    HAND_SIZE
+  end
+
+  def hand_class()
+    WarHand
+  end
+
+  def ranks()
+    Card::RANKS
+  end
 end
 
 class BeloteHand < Hand
