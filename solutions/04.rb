@@ -222,11 +222,11 @@ end
 
 class SixtySixHand < Hand
   def twenty?(trump_suit)
-    kings_and_queens?(trump_suit, -> (x, y) { x != y })
+    kings_and_queens?(trump_suit, Proc.new {|x, y| x != y })
   end
 
   def forty?(trump_suit)
-    kings_and_queens?(trump_suit, -> (x, y) { x == y })
+    kings_and_queens?(trump_suit, Proc.new { |x, y| x == y })
   end
 
   private
