@@ -1,6 +1,7 @@
 class Card
 SUITS = [:diamonds, :spades, :clubs, :hearts].freeze
-RANKS = [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
+RANKS = Hash[((2..10).to_a + [:jack, :queen, :king, :ace])
+              .map.with_index.to_a]
 
 attr_reader :rank, :suit
 
@@ -173,17 +174,13 @@ class BeloteHand < Hand
   def carre_of_aces?()
     is_carre_of?(:ace)
   end
-  
+
   private
   def cards_in_a_row?(amount)
     power = BeloteDeck::RANKS
-
-    grouped = @deck.sort! { |a, b| power[a.rank] <=> power[b.rank] }
-                    .group_by { |card| card.suit }.values
-
+    grouped = @deck.sort!{|a, b| power[a.rank] <=> power[b.rank]}.group_by {|card| card.suit}.values
     grouped.any? do |suited|
       next if suited.size < amount
-
       suited.each_cons(amount).any? do |con|
         are_following_numbers?(con)
       end
@@ -196,7 +193,7 @@ class BeloteHand < Hand
     end
   end
 
-  def carre_of_x?(rank)
+  def is_carre_of?(rank)
     select { |card| card.rank == rank }.size == CARRE_COUNT
   end
 
