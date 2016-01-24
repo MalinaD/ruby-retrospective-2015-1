@@ -1,21 +1,21 @@
 class Card
+SUITS = [:diamonds, :spades, :clubs, :hearts].freeze
+RANKS = [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
 
 attr_reader :rank, :suit
-attr_accessor :position
 
-def initialize(rank,suit, position = 0)
+def initialize(rank,suit)
   @rank = rank
   @suit = suit
-  @position = position
 end
- 
-def <=>(another_card)        
+
+def <=>(another_card)
   @rank <=> another_card.rank
   @suit <=> another_card.suit
 end
 
 def ==(other)
-  (self.class <=> other.class).zero?
+  @rank == other.rank && @suit == other.suit
 end
 
 def to_s
@@ -27,16 +27,12 @@ end
 class Deck
 include Enumerable
 
-def initialize(cards = nil, ranks: nil, hand_type: nil, hand_size: 52)
-  @hand_size = hand_size
-  @hand_type = hand_type
-  ranks ||= [2, 3, 4, 5, 6, 7, 8, 9, 10, :jack, :queen, :king, :ace]
-  @cards = cards || create_new_deck(ranks) 
-  update_ranks(ranks)
+def initialize(cards = nil)
+  @cards = cards || create_new_deck()
 end
 
 def size
-  @cards.count
+  @cards.size
 end
 
 def top_card
@@ -44,15 +40,15 @@ def top_card
 end
 
 def draw_top_card
-  @cards.shift 
+  @cards.shift
 end
 
 def draw_bottom_card
-  @cards.pop 
+  @cards.pop
 end
 
 def bottom_card
-  @cards.last 
+  @cards.last
 end
 
 def shuffle
@@ -60,7 +56,8 @@ def shuffle
 end
 
 def sort
-  @cards.sort!
+  @cards.sort!.reverse!
+  self
 end
 
 def each
@@ -69,25 +66,24 @@ def each
 end
 
 def to_s
-  @cards.each(&:to_s)
+  @cards.map(&:to_s).join("\n")
 end
 
-private 
+def deal()
+  hand = []
+  hand_size().times { hand << draw_top_card unless size == 0 }
 
-def create_new_deck(ranks)
-    suits = %i(spades hearts diamonds clubs)
-
-    suits.product(ranks.to_a).shuffle.map do |product|
-      suit, rank = product
-
-      Card.new(rank, suit)
-    end
+  hand_class.new(hand)
 end
 
-def update_ranks(ranks)
-  @cards.each do |card|
-    card.position = ranks.index(card.rank) + 1
-  end
+def ranks()
+  Card::RANKS
+end
+
+private
+
+def create_new_deck()
+  ranks().keys.product(Card::SUITS).map{|r, s| Card.new(r, s)}
 end
 
 end
@@ -115,11 +111,11 @@ end
 
 class Hand < Deck::Hand
   def play_card
-    draw_top_card
+    @deck.draw_top_card
   end
 
   def allow_face_up?
-    size <= 3
+    @deck.size <= 3
   end
 end
 
@@ -150,6 +146,6 @@ class SixtySixDeck < Deck
     def forty?(trump_suit)
       king_and_queen.any?{ |pair| !pair.nil? && pair.first.suit == trump_suit }
     end
-  end #SixtySixDeck::Hand
+  end
 end
 
