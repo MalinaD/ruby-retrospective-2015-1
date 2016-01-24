@@ -91,7 +91,7 @@ end
 
 class Hand < Deck
 include Enumerable
-attr_reader :cards
+attr_reader :deck
 
   def initialize(deck)
     @deck = deck
@@ -110,14 +110,13 @@ end
 
 class WarHand < Hand
   def play_card
-    @deck.draw_top_card
+    @deck.delete(@deck.sample)
   end
 
   def allow_face_up?
     @deck.size <= 3
   end
 end
-
 
 class WarDeck < Deck
   HAND_SIZE = 26
