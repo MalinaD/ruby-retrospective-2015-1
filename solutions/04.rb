@@ -89,16 +89,20 @@ end
 end
 
 class Hand < Deck
+include Enumerable
+attr_reader :cards
 
-  def initialize(deck, size)
-    super deck.to_a.slice!(0, size)
+  def initialize(deck)
     @deck = deck
-    (0..size).each { deck.draw_top_card }
-    self.sort
   end
 
-  def ranks
-    @deck.ranks
+  def size()
+    @deck.size
+  end
+
+  def each()
+    return @deck.each unless block_given?
+    @deck.each {|card| yield card}
   end
 
 end
@@ -121,31 +125,139 @@ end
 
 end
 
-class SixtySixDeck < Deck
-  def ranks
-    [9, :jack, :queen, :king, 10, :ace]
+class BeloteHand < Hand
+  CARRE_COUNT = 4
+
+  def highest_of_suit(suit)
+    power = BeloteDeck::RANKS
+    highest = Card.new(7, :spades)
+    select { |c| c.suit == suit}
+      .each { |c| highest = c if power[c.rank] > power[highest.rank] }
+
+    highest
   end
 
-  def deal
-    Hand.new(self, 6)
+  def belote?()
+    kings = select { |card| card.rank == :king }
+    kings.each do |king|
+      match = select do |card|
+        card.rank == :queen and card.suit == king.suit
+      end
+
+      return true if match.size != 0
+    end
+
+    false
   end
 
-  class Hand < Deck::Hand
-    def king_and_queen
-      sort
-      @cards.each_cons(2).find_all do |pair|
-        pair.first.suit == pair.last.suit &&
-          pair.first.rank == :king && pair.last.rank == :queen
+  def tierce?()
+    cards_in_a_row?(3)
+  end
+
+  def quarte?()
+    cards_in_a_row?(4)
+  end
+
+  def quint?()
+    cards_in_a_row?(5)
+  end
+
+  def carre_of_jacks?()
+    is_carre_of?(:jack)
+  end
+
+  def carre_of_nines?()
+    is_carre_of?(9)
+  end
+
+  def carre_of_aces?()
+    is_carre_of?(:ace)
+  end
+  
+  private
+  def cards_in_a_row?(amount)
+    power = BeloteDeck::RANKS
+
+    grouped = @deck.sort! { |a, b| power[a.rank] <=> power[b.rank] }
+                    .group_by { |card| card.suit }.values
+
+    grouped.any? do |suited|
+      next if suited.size < amount
+
+      suited.each_cons(amount).any? do |con|
+        are_following_numbers?(con)
+      end
+    end
+  end
+
+  def are_following_numbers?(numbers)
+    numbers.each_cons(2).all? do |a, b|
+      BeloteDeck::RANKS[b.rank] - BeloteDeck::RANKS[a.rank] == 1
+    end
+  end
+
+  def carre_of_x?(rank)
+    select { |card| card.rank == rank }.size == CARRE_COUNT
+  end
+
+end
+
+class BeloteDeck < Deck
+  RANKS = Hash[[7, 8, 9, :jack, :queen, :king, 10, :ace].map.with_index.to_a]
+  HAND_SIZE = 8
+  TOTAL_CARDS = 32
+
+  def hand_size()
+    HAND_SIZE
+  end
+
+  def hand_class()
+    BeloteHand
+  end
+
+  def ranks()
+    RANKS
+  end
+end
+
+class SixtySixHand < Hand
+  def twenty?(trump_suit)
+    kings_and_queens?(trump_suit, -> (x, y) { x != y })
+  end
+
+  def forty?(trump_suit)
+    kings_and_queens?(trump_suit, -> (x, y) { x == y })
+  end
+
+  private
+  def kings_and_queens?(trump_suit, predicate)
+    kings = select { |c| c.rank == :king and predicate.(c.suit, trump_suit) }
+
+    kings.each do |king|
+      return true if @cards.any? do |card|
+        card.rank == :queen and card.suit == king.suit
       end
     end
 
-    def twenty?(trump_suit)
-      king_and_queen.any?{ |pair| !pair.nil? && pair.first.suit != trump_suit }
-    end
+    false
+  end
+end
 
-    def forty?(trump_suit)
-      king_and_queen.any?{ |pair| !pair.nil? && pair.first.suit == trump_suit }
-    end
+class SixtySixDeck < Deck
+  RANKS = Hash[[9, :jack, :queen, :king, 10, :ace].map.with_index.to_a]
+  HAND_SIZE = 6
+  TOTAL_CARDS = 24
+
+  def hand_size()
+    HAND_SIZE
+  end
+
+  def hand_class()
+    SixtySixHand
+  end
+
+  def ranks()
+    RANKS
   end
 end
 
