@@ -10,11 +10,6 @@ def initialize(rank,suit)
   @suit = suit
 end
 
-def <=>(another_card)
-  @rank <=> another_card.rank
-  @suit <=> another_card.suit
-end
-
 def ==(other)
   @rank == other.rank && @suit == other.suit
 end
@@ -57,8 +52,8 @@ def shuffle
 end
 
 def sort
-  @cards.sort!.reverse!
-  self
+    power = ranks()
+    @cards.sort! { |a, b| [b.suit, power[b.rank]] <=> [a.suit, power[a.rank]] }
 end
 
 def each
@@ -240,7 +235,7 @@ class SixtySixHand < Hand
     kings = select { |c| c.rank == :king and predicate.(c.suit, trump_suit) }
 
     kings.each do |king|
-      return true if @cards.any? do |card|
+      return true if @deck.any? do |card|
         card.rank == :queen and card.suit == king.suit
       end
     end
